@@ -23,8 +23,42 @@ app.use(function validateBearerToken(req, res, next) {
   next();
 });
 
-app.get('/movie', (req, res) => {
-  res.json(MOVIES[0]);
+app.get('/movie', function handleGetMovie(req, res) {
+
+  const { genre, country, avg_vote} = req.query;
+  const allowedParams = ['genre', 'country', 'avg_vote'];
+  
+  Object.keys(req.query).forEach(key => {
+    if(!allowedParams.includes(key)) {
+      return res
+        .status(400)
+        .json({ error: 'The only allowed parameters are genre, country, and avg_vote' });
+    }
+  });
+
+  let returnedMovies = MOVIES;
+  
+  //filter based on genre
+  if (genre) {
+    returnedMovies = returnedMovies.filter(movie =>
+      movie['genre'].toLowerCase().includes(genre.toLowerCase())
+    );
+  }
+
+  //filter based on country
+  if (country) {
+    returnedMovies = returnedMovies.filter(movie =>
+      movie['country'].toLowerCase().includes(country.toLowerCase())
+    );
+  }
+
+  //filter based on avg_vote
+  if (avg_vote) {
+    returnedMovies = returnedMovies.filter(movie =>
+      Number(movie['avg_vote']) >= avg_vote
+    );
+  }
+  res.json(returnedMovies);
 });
 
 const PORT = 8000;
