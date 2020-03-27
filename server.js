@@ -61,7 +61,7 @@ app.get('/movie', function handleGetMovie(req, res) {
   res.json(returnedMovies);
 });
 
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
   console.log(`server running on PORT ${PORT}`);
